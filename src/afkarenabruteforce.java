@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -48,16 +47,15 @@ public class afkarenabruteforce {
             jdialog.setVisible(true);
             System.exit(1);
         }
-        BigInteger temp = factorial(strings.length).divide(factorial(strings.length - 5));
-        max = temp.doubleValue();
+        max = fiveFactorial(strings.length);
         ArrayList<String> perms = getPerm(strings);
         showPerms(perms);
     }
 
-    private static BigInteger factorial(int n) {
-        BigInteger out = BigInteger.ONE;
-        for (int p = n; p > 0; p--)
-            out = out.multiply(BigInteger.valueOf(p));
+    private static double fiveFactorial(int n) {
+        double out = n;
+        for (int p = n-1; p > n-5; p--)
+            out*=p;
         return out;
     }
 
