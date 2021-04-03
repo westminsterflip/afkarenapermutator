@@ -4,6 +4,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
 
 //JOptionPane has scaling issues with windows display scaling
 
@@ -11,6 +12,7 @@ public class afkarenabruteforce {
     private static int ind;
     private static double max;
     private static Point windowLocation = new Point();
+    private static boolean random = false;
 
     public static void main(String[] args) throws InterruptedException {
         JOptionPane nameChooser = new JOptionPane("Enter names separated by commas", JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
@@ -151,27 +153,61 @@ public class afkarenabruteforce {
         JPanel buttons = new JPanel();
         JButton restart = new JButton("Restart");
         JButton next = new JButton("Next");
+        JButton restartRandom = new JButton("Random");
+        ArrayList<Integer> chosen = new ArrayList<>();
         restart.addActionListener(e -> {
             ind = 0;
+            random = false;
             option.setText(perms.get(ind));
             frame.pack();
             frame.revalidate();
             next.setEnabled(true);
             restart.setEnabled(false);
+            restartRandom.setEnabled(true);
             frame.setTitle((perms.size() - ind - 1) + " options left");
         });
         buttons.add(restart);
 
         next.addActionListener(e -> {
             ind++;
-            option.setText(perms.get(ind));
+            if(!random) {
+                option.setText(perms.get(ind));
+            } else {
+                boolean good = false;
+                int index = -1;
+                while (!good){
+                    index = ThreadLocalRandom.current().nextInt(perms.size());
+                    good = !chosen.contains(index);
+                }
+                chosen.add(index);
+                option.setText(perms.get(index));
+            }
             frame.pack();
             frame.revalidate();
             if (ind >= perms.size() - 1)
                 next.setEnabled(false);
             restart.setEnabled(true);
-            frame.setTitle((perms.size() - ind - 1) + " options left");
+            restartRandom.setEnabled(true);
+            frame.setTitle((perms.size() - ind - 1) + " options left" + (random ? " ~ random":""));
         });
+
+        restartRandom.addActionListener(e-> {
+            ind = 0;
+            random = true;
+            chosen.clear();
+            int rand = ThreadLocalRandom.current().nextInt(perms.size());
+            option.setText(perms.get(rand));
+            chosen.add(rand);
+            frame.pack();
+            frame.revalidate();
+            next.setEnabled(true);
+            restart.setEnabled(true);
+            restartRandom.setEnabled(false);
+            frame.setTitle((perms.size() - ind - 1) + " options left ~ random");
+        });
+
+        restartRandom.setPreferredSize(new Dimension(76,26));
+        buttons.add(restartRandom);
         next.setPreferredSize(new Dimension(76, 26));
         buttons.add(next);
 
